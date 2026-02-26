@@ -183,7 +183,7 @@ export default function App() {
                   <div className="pt-6">
                     <button
                       onClick={handlePlay}
-                      className="w-full bg-blue-600 hover:bg-blue-500 text-white py-8 sm:py-10 rounded-[30px] sm:rounded-[40px] text-3xl sm:text-4xl font-black shadow-2xl shadow-blue-600/30 flex items-center justify-center gap-6 transition-all active:scale-95"
+                      className="w-full btn-premium py-10 text-4xl shadow-blue-600/30 flex items-center justify-center gap-6"
                     >
                       <Play size={48} fill="currentColor" />
                       {state.progress[selectedLesson.id]?.lastPosition ? 'CONTINUAR VÍDEO' : 'VER AHORA'}
@@ -219,24 +219,25 @@ export default function App() {
                 {LESSONS.findIndex(l => l.id === selectedLesson.id) < LESSONS.length - 1 ? (
                   <button
                     onClick={handleNext}
-                    className="w-full bg-fuengirola-blue text-white py-10 rounded-[40px] text-4xl font-black shadow-2xl flex items-center justify-center gap-6 active:scale-95 transition-transform"
+                    className="w-full btn-premium py-10 !rounded-[40px] text-4xl shadow-blue-600/30 flex items-center justify-center gap-6"
                   >
                     SIGUIENTE VÍDEO
                     <ArrowRight size={48} />
                   </button>
                 ) : (
-                  <p className="text-2xl font-black text-fuengirola-blue uppercase tracking-widest">
+                  <p className="text-2xl font-black text-blue-400 uppercase tracking-widest">
                     ¡Has terminado todo el curso! 🌟
                   </p>
                 )}
 
                 <button
                   onClick={() => setState(prev => ({ ...prev, currentView: 'home', selectedLessonId: null }))}
-                  className="w-full glass border border-white/10 text-white/60 py-8 rounded-[40px] text-3xl font-black active:scale-95 hover:bg-white/5 hover:text-white transition-all shadow-xl"
+                  className="w-full btn-glass py-8 text-3xl opacity-60 hover:opacity-100"
                 >
                   VOLVER AL INICIO
                 </button>
               </div>
+
             </motion.div>
           )}
         </AnimatePresence>

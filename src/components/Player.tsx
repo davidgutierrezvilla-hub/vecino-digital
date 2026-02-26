@@ -1,11 +1,6 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useRef, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Play, Pause, Square, SkipBack, SkipForward, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Play, Pause, X, RotateCcw, RotateCw, SkipBack, SkipForward } from 'lucide-react';
 import { Lesson } from '../types';
 
 interface PlayerProps {
@@ -29,8 +24,10 @@ export const Player: React.FC<PlayerProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const lastSavedTimeRef = useRef(initialPosition);
   const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [showControls, setShowControls] = useState(true);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -38,147 +35,173 @@ export const Player: React.FC<PlayerProps> = ({
     }
   }, [initialPosition]);
 
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (isPlaying) {
+      timeout = setTimeout(() => setShowControls(false), 3000);
+    }
+    return () => clearTimeout(timeout);
+  }, [isPlaying, showControls]);
+
   const togglePlay = () => {
     if (videoRef.current) {
       if (isPlaying) {
         videoRef.current.pause();
+        onUpdatePosition(videoRef.current.currentTime);
       } else {
         videoRef.current.play();
       }
       setIsPlaying(!isPlaying);
+      setShowControls(true);
     }
   };
 
-  const handleStop = () => {
+  const skip = (seconds: number) => {
     if (videoRef.current) {
-      const currentTime = videoRef.current.currentTime;
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-      setIsPlaying(false);
-      onUpdatePosition(currentTime); // Save final position before closing
-      onClose();
+      videoRef.current.currentTime += seconds;
+      setShowControls(true);
     }
   };
 
   const handleTimeUpdate = () => {
     if (videoRef.current) {
       const current = videoRef.current.currentTime;
-      const duration = videoRef.current.duration;
-      setProgress((current / duration) * 100);
-
-      // Only update parent state every 5 seconds to reduce re-renders
-      if (Math.abs(current - lastSavedTimeRef.current) > 5) {
-        onUpdatePosition(current);
-        lastSavedTimeRef.current = current;
-      }
+      const dur = videoRef.current.duration;
+      setCurrentTime(current);
+      setDuration(dur);
+      setProgress((current / dur) * 100);
     }
   };
 
-  const handleEnded = () => {
-    onComplete();
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
-    <div className="fixed inset-0 bg-black z-[100] flex flex-col">
-      {/* Top Bar */}
-      <div className="absolute top-0 left-0 right-0 p-4 sm:p-8 flex justify-between items-center z-10 bg-black/60">
-        <h2 className="text-white text-xl sm:text-3xl font-black truncate pr-12 sm:pr-16 uppercase tracking-tight">
-          {lesson.title}
-        </h2>
-        <button
-          onClick={() => {
-            if (videoRef.current) onUpdatePosition(videoRef.current.currentTime);
-            onClose();
-          }}
-          className="bg-white/10 hover:bg-white/30 p-4 sm:p-6 rounded-full text-white transition-all active:scale-90 border-2 border-white/20"
-          aria-label="Cerrar reproductor"
-        >
-          <X className="w-8 h-8 sm:w-12 sm:h-12" strokeWidth={3} />
-        </button>
-      </div>
+    <div
+      className="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center overflow-hidden"
+      onClick={() => setShowControls(true)}
+    >
+      <video
+        ref={videoRef}
+        src={lesson.videoUrl}
+        poster={lesson.thumbnail}
+        className="w-full h-full object-contain"
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={onComplete}
+        onClick={(e) => {
+          e.stopPropagation();
+          togglePlay();
+        }}
+        playsInline
+        autoPlay
+        preload="auto"
+      />
 
-      {/* Video Area */}
-      <div className="flex-1 flex items-center justify-center relative group bg-black">
-        <video
-          ref={videoRef}
-          src={lesson.videoUrl}
-          poster={lesson.thumbnail}
-          className="w-full h-full object-contain max-h-screen shadow-2xl"
-          onTimeUpdate={handleTimeUpdate}
-          onEnded={handleEnded}
-          onClick={togglePlay}
-          playsInline
-          autoPlay
-          preload="auto"
-          controlsList="nodownload"
-        />
-
-        {!isPlaying && (
-          <button
-            onClick={togglePlay}
-            className="absolute bg-fuengirola-blue/90 p-10 sm:p-16 rounded-full text-white shadow-2xl scale-110 active:scale-95 transition-transform border-4 border-white/20 backdrop-blur-sm"
+      <AnimatePresence>
+        {showControls && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/40 flex flex-col justify-between p-6 sm:p-12"
           >
-            <Play className="w-16 h-16 sm:w-24 sm:h-24" fill="currentColor" />
-          </button>
-        )}
-      </div>
-
-      {/* Controls Bar */}
-      <div className="bg-zinc-900 p-6 sm:p-10 pb-10 sm:pb-16 border-t border-white/5">
-        <div className="max-w-5xl mx-auto space-y-8 sm:space-y-12">
-          {/* Progress Bar */}
-          <div className="relative group/progress cursor-pointer">
-            <div className="w-full bg-zinc-800 h-3 sm:h-5 rounded-full overflow-hidden shadow-inner transition-all group-hover/progress:h-5 sm:group-hover/progress:h-8">
-              <div
-                className="bg-fuengirola-gold h-full rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(254,203,0,0.4)]"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            {/* Clickable area for seeking - note: seeking logic could be added here if needed */}
-          </div>
-
-          {/* Buttons */}
-          <div className="flex justify-between items-center gap-4 sm:gap-12">
-            <button
-              onClick={onPrev}
-              disabled={!onPrev}
-              className="p-4 sm:p-8 text-white disabled:opacity-20 active:scale-90 hover:bg-white/5 rounded-full transition-all flex flex-col items-center gap-2 group"
-            >
-              <SkipBack className="w-10 h-10 sm:w-16 sm:h-16" fill={onPrev ? "currentColor" : "none"} strokeWidth={2.5} />
-              <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] opacity-40 group-hover:opacity-100 transition-opacity">Anterior</span>
-            </button>
-
-            <div className="flex gap-6 sm:gap-16 items-center">
+            {/* Top Bar */}
+            <div className="flex justify-between items-start">
+              <div className="space-y-1">
+                <h2 className="text-white text-2xl sm:text-4xl font-black uppercase tracking-tight drop-shadow-lg">
+                  {lesson.title}
+                </h2>
+                <p className="text-blue-300 font-bold text-lg sm:text-xl opacity-80 uppercase tracking-widest">
+                  Lección {lesson.order}
+                </p>
+              </div>
               <button
-                onClick={handleStop}
-                className="p-4 sm:p-8 text-white bg-zinc-800/50 hover:bg-zinc-800 rounded-full active:scale-90 transition-all border-2 border-white/5 hover:border-white/10"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (videoRef.current) onUpdatePosition(videoRef.current.currentTime);
+                  onClose();
+                }}
+                className="bg-white/10 hover:bg-white/20 p-4 sm:p-5 rounded-full text-white backdrop-blur-xl transition-all border border-white/20 active:scale-90"
               >
-                <Square className="w-8 h-8 sm:w-12 sm:h-12" fill="currentColor" strokeWidth={2.5} />
+                <X size={32} strokeWidth={3} />
+              </button>
+            </div>
+
+            {/* Center Controls */}
+            <div className="flex items-center justify-center gap-8 sm:gap-20" onClick={(e) => e.stopPropagation()}>
+              <button
+                onClick={() => skip(-10)}
+                className="text-white/80 hover:text-white transition-all active:scale-90 flex flex-col items-center gap-2"
+              >
+                <div className="relative">
+                  <RotateCcw size={60} strokeWidth={1.5} className="sm:w-24 sm:h-24" />
+                  <span className="absolute inset-0 flex items-center justify-center text-lg sm:text-2xl font-black mt-1">10</span>
+                </div>
               </button>
 
               <button
                 onClick={togglePlay}
-                className="p-8 sm:p-14 text-white bg-fuengirola-blue rounded-full shadow-[0_20px_50px_rgba(0,75,147,0.5)] active:scale-90 transition-all border-4 border-white/20 hover:scale-105 hover:shadow-[0_25px_60px_rgba(0,75,147,0.6)]"
+                className="bg-white/20 hover:bg-white/30 p-10 sm:p-16 rounded-full text-white backdrop-blur-2xl transition-all border-2 border-white/20 shadow-2xl active:scale-95"
               >
                 {isPlaying ? (
-                  <Pause className="w-14 h-14 sm:w-22 sm:h-22" fill="currentColor" strokeWidth={2.5} />
+                  <Pause size={64} fill="white" className="sm:w-24 sm:h-24" />
                 ) : (
-                  <Play className="w-14 h-14 sm:w-22 sm:h-22" fill="currentColor" strokeWidth={2.5} />
+                  <Play size={64} fill="white" className="sm:w-24 sm:h-24 ml-2" />
                 )}
+              </button>
+
+              <button
+                onClick={() => skip(10)}
+                className="text-white/80 hover:text-white transition-all active:scale-90 flex flex-col items-center gap-2"
+              >
+                <div className="relative">
+                  <RotateCw size={60} strokeWidth={1.5} className="sm:w-24 sm:h-24" />
+                  <span className="absolute inset-0 flex items-center justify-center text-lg sm:text-2xl font-black mt-1">10</span>
+                </div>
               </button>
             </div>
 
-            <button
-              onClick={onNext}
-              disabled={!onNext}
-              className="p-4 sm:p-8 text-white disabled:opacity-20 active:scale-90 hover:bg-white/5 rounded-full transition-all flex flex-col items-center gap-2 group"
-            >
-              <SkipForward className="w-10 h-10 sm:w-16 sm:h-16" fill={onNext ? "currentColor" : "none"} strokeWidth={2.5} />
-              <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] opacity-40 group-hover:opacity-100 transition-opacity">Siguiente</span>
-            </button>
-          </div>
-        </div>
-      </div>
+            {/* Bottom Controls */}
+            <div className="space-y-6" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-4 text-white/80 font-black text-lg sm:text-xl tabular-nums">
+                <span>{formatTime(currentTime)}</span>
+                <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm border border-white/5">
+                  <motion.div
+                    className="h-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+                    initial={false}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ type: 'spring', bounce: 0, duration: 0.1 }}
+                  />
+                </div>
+                <span>-{formatTime(duration - currentTime)}</span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <button
+                  onClick={onPrev}
+                  disabled={!onPrev}
+                  className="flex items-center gap-3 text-white/50 hover:text-white disabled:opacity-0 transition-all font-black uppercase tracking-widest text-lg"
+                >
+                  <SkipBack size={32} fill="currentColor" />
+                  Anterior
+                </button>
+                <button
+                  onClick={onNext}
+                  disabled={!onNext}
+                  className="flex items-center gap-3 text-white/50 hover:text-white disabled:opacity-0 transition-all font-black uppercase tracking-widest text-lg"
+                >
+                  Siguiente
+                  <SkipForward size={32} fill="currentColor" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
+

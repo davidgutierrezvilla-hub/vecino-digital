@@ -28,10 +28,10 @@ export const Header: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white/5 px-6 py-2 rounded-full border border-white/10 backdrop-blur-md">
-          <span className="text-blue-200 font-black text-lg tracking-wider">VECINDAD</span>
-        </div>
+
+        <div />
       </div>
     </header>
+
   );
 };
