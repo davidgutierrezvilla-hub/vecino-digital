@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, X, RotateCcw, RotateCw, SkipBack, SkipForward } from 'lucide-react';
+import { Play, Pause, X, RotateCcw, RotateCw, SkipBack, SkipForward, Maximize, Minimize } from 'lucide-react';
 import { Lesson } from '../types';
 
 interface PlayerProps {
@@ -23,11 +23,13 @@ export const Player: React.FC<PlayerProps> = ({
   onUpdatePosition
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showControls, setShowControls] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -43,6 +45,14 @@ export const Player: React.FC<PlayerProps> = ({
     return () => clearTimeout(timeout);
   }, [isPlaying, showControls]);
 
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
   const togglePlay = () => {
     if (videoRef.current) {
       if (isPlaying) {
@@ -53,6 +63,19 @@ export const Player: React.FC<PlayerProps> = ({
       }
       setIsPlaying(!isPlaying);
       setShowControls(true);
+    }
+  };
+
+  const toggleFullscreen = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!containerRef.current) return;
+
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
     }
   };
 
@@ -73,6 +96,13 @@ export const Player: React.FC<PlayerProps> = ({
     }
   };
 
+  const handleEnded = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+    onComplete();
+  };
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -81,6 +111,7 @@ export const Player: React.FC<PlayerProps> = ({
 
   return (
     <div
+      ref={containerRef}
       className="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center overflow-hidden"
       onClick={() => setShowControls(true)}
     >
@@ -90,7 +121,7 @@ export const Player: React.FC<PlayerProps> = ({
         poster={lesson.thumbnail}
         className="w-full h-full object-contain"
         onTimeUpdate={handleTimeUpdate}
-        onEnded={onComplete}
+        onEnded={handleEnded}
         onClick={(e) => {
           e.stopPropagation();
           togglePlay();
@@ -118,16 +149,24 @@ export const Player: React.FC<PlayerProps> = ({
                   Lección {lesson.order}
                 </p>
               </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (videoRef.current) onUpdatePosition(videoRef.current.currentTime);
-                  onClose();
-                }}
-                className="bg-white/10 hover:bg-white/20 p-4 sm:p-5 rounded-full text-white backdrop-blur-xl transition-all border border-white/20 active:scale-90"
-              >
-                <X size={32} strokeWidth={3} />
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={toggleFullscreen}
+                  className="bg-white/10 hover:bg-white/20 p-4 sm:p-5 rounded-full text-white backdrop-blur-xl transition-all border border-white/20 active:scale-90"
+                >
+                  {isFullscreen ? <Minimize size={32} strokeWidth={3} /> : <Maximize size={32} strokeWidth={3} />}
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (videoRef.current) onUpdatePosition(videoRef.current.currentTime);
+                    onClose();
+                  }}
+                  className="bg-white/10 hover:bg-white/20 p-4 sm:p-5 rounded-full text-white backdrop-blur-xl transition-all border border-white/20 active:scale-90"
+                >
+                  <X size={32} strokeWidth={3} />
+                </button>
+              </div>
             </div>
 
             {/* Center Controls */}
