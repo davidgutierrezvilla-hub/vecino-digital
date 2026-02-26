@@ -29,6 +29,7 @@ export const Player: React.FC<PlayerProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const lastSavedTimeRef = useRef(initialPosition);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -50,10 +51,11 @@ export const Player: React.FC<PlayerProps> = ({
 
   const handleStop = () => {
     if (videoRef.current) {
+      const currentTime = videoRef.current.currentTime;
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
       setIsPlaying(false);
-      onUpdatePosition(0);
+      onUpdatePosition(currentTime); // Save final position before closing
       onClose();
     }
   };
@@ -63,7 +65,12 @@ export const Player: React.FC<PlayerProps> = ({
       const current = videoRef.current.currentTime;
       const duration = videoRef.current.duration;
       setProgress((current / duration) * 100);
-      onUpdatePosition(current);
+
+      // Only update parent state every 5 seconds to reduce re-renders
+      if (Math.abs(current - lastSavedTimeRef.current) > 5) {
+        onUpdatePosition(current);
+        lastSavedTimeRef.current = current;
+      }
     }
   };
 
@@ -79,7 +86,10 @@ export const Player: React.FC<PlayerProps> = ({
           {lesson.title}
         </h2>
         <button
-          onClick={onClose}
+          onClick={() => {
+            if (videoRef.current) onUpdatePosition(videoRef.current.currentTime);
+            onClose();
+          }}
           className="bg-white/10 hover:bg-white/30 p-4 sm:p-6 rounded-full text-white transition-all active:scale-90 border-2 border-white/20"
           aria-label="Cerrar reproductor"
         >
