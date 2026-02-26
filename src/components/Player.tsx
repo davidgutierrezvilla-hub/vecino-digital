@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, X, RotateCcw, RotateCw, SkipBack, SkipForward, Maximize, Minimize } from 'lucide-react';
+import { Play, Pause, X, RotateCcw, RotateCw, SkipBack, SkipForward, Maximize, Minimize, Cast } from 'lucide-react';
 import { Lesson } from '../types';
 
 interface PlayerProps {
@@ -30,10 +30,25 @@ export const Player: React.FC<PlayerProps> = ({
   const [duration, setDuration] = useState(0);
   const [showControls, setShowControls] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [canCast, setCanCast] = useState(false);
 
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.currentTime = initialPosition;
+
+      // Check for Remote Playback API support
+      const video = videoRef.current as any;
+      if (video.remote && video.remote.watchAvailability) {
+        video.remote.watchAvailability((available: boolean) => {
+          setCanCast(available);
+        }).catch(() => {
+          // Fallback if watchAvailability fails
+          setCanCast(true);
+        });
+      } else if (video.webkitShowPlaybackTargetPicker) {
+        // AirPlay support check
+        setCanCast(true);
+      }
     }
   }, [initialPosition]);
 
@@ -101,6 +116,18 @@ export const Player: React.FC<PlayerProps> = ({
     }
   };
 
+  const toggleCast = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!videoRef.current) return;
+
+    const video = videoRef.current as any;
+    if (video.remote && video.remote.prompt) {
+      video.remote.prompt();
+    } else if (video.webkitShowPlaybackTargetPicker) {
+      video.webkitShowPlaybackTargetPicker();
+    }
+  };
+
   const skip = (seconds: number) => {
     if (videoRef.current) {
       videoRef.current.currentTime += seconds;
@@ -153,6 +180,7 @@ export const Player: React.FC<PlayerProps> = ({
         playsInline
         autoPlay
         preload="auto"
+        {...({ "x-webkit-airplay": "allow" } as any)}
       />
 
       <AnimatePresence>
@@ -174,6 +202,15 @@ export const Player: React.FC<PlayerProps> = ({
                 </p>
               </div>
               <div className="flex gap-4">
+                {canCast && (
+                  <button
+                    onClick={toggleCast}
+                    className="bg-white/10 hover:bg-white/20 p-4 sm:p-5 rounded-full text-white backdrop-blur-xl transition-all border border-white/20 active:scale-90"
+                    title="Enviar a TV"
+                  >
+                    <Cast size={32} strokeWidth={3} />
+                  </button>
+                )}
                 <button
                   onClick={toggleFullscreen}
                   className="bg-white/10 hover:bg-white/20 p-4 sm:p-5 rounded-full text-white backdrop-blur-xl transition-all border border-white/20 active:scale-90"
