@@ -16,49 +16,53 @@ interface LessonCardProps {
 
 export const LessonCard: React.FC<LessonCardProps> = ({ lesson, status, onClick, isFeatured }) => {
   const statusLabels = {
-    [LessonStatus.PENDING]: { label: 'Pendiente', color: 'bg-gray-100 text-gray-600' },
-    [LessonStatus.IN_PROGRESS]: { label: 'En curso', color: 'bg-blue-100 text-blue-700' },
-    [LessonStatus.COMPLETED]: { label: 'Hecha', color: 'bg-green-100 text-green-700' },
+    [LessonStatus.PENDING]: { label: 'Pendiente', color: 'bg-white/10 text-white/60' },
+    [LessonStatus.IN_PROGRESS]: { label: 'En curso', color: 'bg-blue-500/20 text-blue-300' },
+    [LessonStatus.COMPLETED]: { label: 'Hecha', color: 'bg-green-500/20 text-green-300' },
   };
 
   return (
-    <button 
+    <button
       onClick={onClick}
-      className={`w-full text-left bg-white rounded-3xl overflow-hidden border-4 transition-all active:scale-95 ${
-        isFeatured ? 'border-blue-600 shadow-xl' : 'border-gray-200 shadow-md'
-      }`}
+      className={`group glass p-4 rounded-[2.5rem] transition-all hover:border-blue-400/30 shadow-lg flex flex-col items-center mx-auto w-full max-w-[480px] hover:scale-[1.02] active:scale-95 ${isFeatured ? 'ring-2 ring-blue-500/50' : ''
+        }`}
     >
-      <div className="relative aspect-video">
-        <img 
-          src={lesson.thumbnail} 
+      {/* Contenedor del Vídeo con Proporción 16:9 */}
+      <div className="relative w-full aspect-[16/9] rounded-[1.5rem] overflow-hidden bg-black shadow-inner mb-4 ring-1 ring-white/10">
+        <img
+          src={lesson.thumbnail}
           alt={lesson.title}
-          className="w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-110"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-          <div className="bg-white/90 p-4 rounded-full shadow-lg">
-            <Play className="w-10 h-10 text-blue-800 fill-blue-800" />
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="bg-white/20 backdrop-blur-md p-4 rounded-full shadow-lg">
+            <Play className="w-10 h-10 text-white fill-white" />
           </div>
         </div>
-        <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1 rounded-lg font-bold text-lg">
+
+        {/* Badge de estado en la esquina */}
+        <div className="absolute top-4 left-4">
+          <span className={`px-4 py-1 rounded-full font-bold text-xs uppercase tracking-wider backdrop-blur-md ${statusLabels[status].color}`}>
+            {statusLabels[status].label}
+          </span>
+        </div>
+
+        {/* Duración */}
+        <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1 rounded-lg font-bold text-sm">
           {lesson.duration}
         </div>
       </div>
-      
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-2">
-          <span className={`px-4 py-1 rounded-full font-bold text-sm uppercase tracking-wider ${statusLabels[status].color}`}>
-            {statusLabels[status].label}
-          </span>
-          <span className="text-gray-400 font-bold text-xl">#{lesson.order}</span>
-        </div>
-        <h3 className="text-2xl font-black text-gray-900 mb-2 leading-tight">
-          {lesson.title}
-        </h3>
-        <p className="text-lg text-gray-600 line-clamp-2">
-          {lesson.description}
-        </p>
-      </div>
+
+      {/* Título o Texto Inferior */}
+      <h3 className="text-white font-medium text-xl px-2 text-center leading-tight">
+        {lesson.title}
+      </h3>
+
+      {/* Orden de la lección decorativo */}
+      <span className="mt-2 text-white/20 font-black text-sm uppercase tracking-widest">
+        Lección #{lesson.order}
+      </span>
     </button>
   );
 };

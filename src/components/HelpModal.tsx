@@ -27,37 +27,37 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-[200] flex items-end sm:items-center justify-center p-4">
-      <div className="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-300">
-        <div className="bg-blue-800 p-6 flex justify-between items-center text-white">
+    <div className="fixed inset-0 bg-black/80 z-[200] flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
+      <div className="glass w-full max-w-lg rounded-[40px] overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-300 border border-white/10">
+        <div className="bg-blue-600/20 p-6 flex justify-between items-center text-white border-b border-white/5 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <HelpCircle size={32} />
-            <h2 className="text-2xl font-bold">Ayuda</h2>
+            <HelpCircle size={32} className="text-blue-400" />
+            <h2 className="text-2xl font-black uppercase tracking-tight">Ayuda</h2>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-full">
+          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
             <X size={32} />
           </button>
         </div>
-        
+
         <div className="p-8 space-y-8 max-h-[70vh] overflow-y-auto">
           {faqs.map((faq, i) => (
             <div key={i} className="space-y-3">
-              <h3 className="text-xl font-black text-blue-900 leading-tight">
+              <h3 className="text-xl font-black text-blue-300 leading-tight">
                 {faq.q}
               </h3>
-              <p className="text-lg text-gray-700 leading-relaxed">
+              <p className="text-lg text-white/60 leading-relaxed font-medium">
                 {faq.a}
               </p>
             </div>
           ))}
         </div>
 
-        <div className="p-6 bg-gray-50 border-t border-gray-200">
-          <button 
+        <div className="p-8 bg-black/20 border-t border-white/5">
+          <button
             onClick={onClose}
-            className="w-full bg-blue-600 text-white py-5 rounded-2xl text-xl font-bold shadow-lg active:scale-95 transition-transform"
+            className="w-full bg-blue-600 hover:bg-blue-500 text-white py-6 rounded-[30px] text-xl font-black shadow-xl active:scale-95 transition-all"
           >
-            Entendido, volver
+            ENTENDIDO, VOLVER
           </button>
         </div>
       </div>

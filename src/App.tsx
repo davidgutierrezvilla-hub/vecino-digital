@@ -93,10 +93,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f0f4f8] pt-28 sm:pt-32 pb-16 px-4 sm:px-8">
+    <div className="min-h-screen pt-28 sm:pt-32 pb-16 px-4 sm:px-8 overflow-x-hidden">
       <Header />
 
-      <main className="max-w-4xl mx-auto space-y-8 sm:space-y-12">
+      <main className="max-w-5xl mx-auto space-y-8 sm:space-y-12">
         <AnimatePresence mode="wait">
           {state.currentView === 'home' && (
             <motion.div
@@ -109,8 +109,8 @@ export default function App() {
               <ProgressBar completed={completedCount} total={LESSONS.length} />
 
               <section>
-                <h2 className="text-4xl font-black text-gray-900 mb-8 flex items-center gap-4 px-2">
-                  <span className="w-3 h-10 bg-fuengirola-blue rounded-full" />
+                <h2 className="text-4xl font-black text-white mb-8 flex items-center gap-4 px-2">
+                  <span className="w-3 h-10 bg-blue-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
                   Tu aprendizaje hoy
                 </h2>
                 <div className="grid gap-10">
@@ -128,9 +128,9 @@ export default function App() {
 
               <button
                 onClick={() => setShowHelp(true)}
-                className="w-full flex items-center justify-center gap-4 p-8 bg-white border-4 border-dashed border-fuengirola-blue/20 rounded-[40px] text-fuengirola-blue font-black text-2xl hover:bg-fuengirola-blue/5 transition-all shadow-md"
+                className="w-full flex items-center justify-center gap-4 p-8 glass border-2 border-dashed border-white/10 rounded-[40px] text-blue-300 font-black text-2xl hover:bg-white/5 transition-all shadow-xl group"
               >
-                <HelpCircle size={40} />
+                <HelpCircle size={40} className="transition-transform group-hover:scale-110" />
                 ¿Quieres que te ayudemos?
               </button>
             </motion.div>
@@ -146,44 +146,44 @@ export default function App() {
             >
               <button
                 onClick={() => setState(prev => ({ ...prev, currentView: 'home' }))}
-                className="flex items-center gap-3 text-fuengirola-blue font-black text-2xl p-4 hover:bg-fuengirola-blue/10 rounded-2xl transition-colors"
+                className="flex items-center gap-3 text-blue-300 font-black text-2xl p-4 hover:bg-white/5 rounded-2xl transition-colors group"
               >
-                <ArrowLeft size={36} />
+                <ArrowLeft size={36} className="transition-transform group-hover:-translate-x-1" />
                 Volver al curso
               </button>
 
-              <div className="bg-white rounded-[60px] overflow-hidden shadow-xl border-4 border-fuengirola-blue/5">
-                <div className="aspect-video relative cursor-pointer" onClick={handlePlay}>
-                  <img src={selectedLesson.thumbnail} alt="" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-fuengirola-blue/10 flex items-center justify-center">
-                    <div className="bg-white p-8 rounded-full shadow-2xl">
-                      <Play size={64} className="text-fuengirola-blue fill-fuengirola-blue" />
+              <div className="glass rounded-[40px] sm:rounded-[60px] overflow-hidden shadow-2xl border border-white/10">
+                <div className="aspect-[16/9] relative cursor-pointer group" onClick={handlePlay}>
+                  <img src={selectedLesson.thumbnail} alt="" className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <div className="bg-white/20 backdrop-blur-xl p-8 rounded-full shadow-2xl ring-1 ring-white/20 transition-transform group-hover:scale-110">
+                      <Play size={64} className="text-white fill-white ml-2" />
                     </div>
                   </div>
                 </div>
 
-                <div className="p-12 space-y-8">
+                <div className="p-8 sm:p-12 space-y-8">
                   <div className="flex justify-between items-center">
-                    <span className="bg-fuengirola-blue text-white px-6 py-2 rounded-2xl font-black text-xl uppercase">
+                    <span className="bg-blue-600 text-white px-6 py-2 rounded-2xl font-black text-xl uppercase tracking-wider shadow-lg shadow-blue-600/20">
                       Lección {selectedLesson.order}
                     </span>
-                    <span className="bg-fuengirola-blue/5 px-6 py-2 rounded-2xl font-black text-fuengirola-blue text-xl">
-                      {selectedLesson.duration} mins
+                    <span className="bg-white/5 backdrop-blur-md px-6 py-2 rounded-2xl font-black text-blue-200 text-xl border border-white/5">
+                      {selectedLesson.duration} min
                     </span>
                   </div>
 
-                  <h2 className="text-5xl font-black text-gray-900 leading-tight">
+                  <h2 className="text-4xl sm:text-5xl font-black text-white leading-tight">
                     {selectedLesson.title}
                   </h2>
 
-                  <p className="text-2xl text-gray-600 leading-relaxed font-medium">
+                  <p className="text-xl sm:text-2xl text-white/60 leading-relaxed font-medium">
                     {selectedLesson.description}
                   </p>
 
                   <div className="pt-6">
                     <button
                       onClick={handlePlay}
-                      className="w-full bg-fuengirola-blue hover:bg-fuengirola-blue/90 text-white py-10 rounded-[40px] text-4xl font-black shadow-2xl shadow-fuengirola-blue/30 flex items-center justify-center gap-6 transition-all active:scale-95"
+                      className="w-full bg-blue-600 hover:bg-blue-500 text-white py-8 sm:py-10 rounded-[30px] sm:rounded-[40px] text-3xl sm:text-4xl font-black shadow-2xl shadow-blue-600/30 flex items-center justify-center gap-6 transition-all active:scale-95"
                     >
                       <Play size={48} fill="currentColor" />
                       {state.progress[selectedLesson.id]?.lastPosition ? 'CONTINUAR VÍDEO' : 'VER AHORA'}
@@ -199,19 +199,19 @@ export default function App() {
               key="end"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center space-y-12 py-16 px-8 bg-white rounded-[80px] border-4 border-fuengirola-blue/10 shadow-2xl"
+              className="text-center space-y-12 py-16 px-8 glass rounded-[60px] sm:rounded-[80px] border border-white/10 shadow-2xl"
             >
               <div className="flex justify-center">
-                <div className="bg-green-100 p-12 rounded-[50px] text-green-600">
+                <div className="bg-green-500/10 p-12 rounded-[50px] text-green-400 backdrop-blur-md border border-green-500/20 shadow-[0_0_30px_rgba(74,222,128,0.1)]">
                   <CheckCircle size={140} strokeWidth={3} />
                 </div>
               </div>
 
               <div className="space-y-6">
-                <h2 className="text-6xl font-black text-gray-900 tracking-tight">¡Bravo!</h2>
-                <p className="text-3xl text-gray-700 font-bold leading-snug">
+                <h2 className="text-6xl font-black text-white tracking-tight">¡Bravo!</h2>
+                <p className="text-3xl text-white/70 font-bold leading-snug">
                   Has completado: <br />
-                  <span className="text-fuengirola-blue text-4xl font-black block mt-2">"{selectedLesson.title}"</span>
+                  <span className="text-blue-400 text-4xl font-black block mt-2">"{selectedLesson.title}"</span>
                 </p>
               </div>
 
@@ -232,7 +232,7 @@ export default function App() {
 
                 <button
                   onClick={() => setState(prev => ({ ...prev, currentView: 'home', selectedLessonId: null }))}
-                  className="w-full bg-white border-4 border-fuengirola-blue/20 text-fuengirola-blue py-8 rounded-[40px] text-3xl font-black active:scale-95 hover:bg-fuengirola-blue/5 transition-all shadow-xl"
+                  className="w-full glass border border-white/10 text-white/60 py-8 rounded-[40px] text-3xl font-black active:scale-95 hover:bg-white/5 hover:text-white transition-all shadow-xl"
                 >
                   VOLVER AL INICIO
                 </button>
