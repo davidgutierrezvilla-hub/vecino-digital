@@ -88,22 +88,24 @@ export const Player: React.FC<PlayerProps> = ({
       </div>
 
       {/* Video Area */}
-      <div className="flex-1 flex items-center justify-center relative group">
+      <div className="flex-1 flex items-center justify-center relative group bg-black">
         <video
           ref={videoRef}
           src={lesson.videoUrl}
-          className="w-full h-auto max-h-[80vh] shadow-2xl bg-black"
+          poster={lesson.thumbnail}
+          className="w-full h-full object-contain max-h-screen shadow-2xl"
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleEnded}
           onClick={togglePlay}
           playsInline
+          autoPlay
           preload="auto"
         />
 
         {!isPlaying && (
           <button
             onClick={togglePlay}
-            className="absolute bg-fuengirola-blue p-10 sm:p-16 rounded-full text-white shadow-2xl scale-110 active:scale-95 transition-transform border-4 border-white/20"
+            className="absolute bg-fuengirola-blue/90 p-10 sm:p-16 rounded-full text-white shadow-2xl scale-110 active:scale-95 transition-transform border-4 border-white/20 backdrop-blur-sm"
           >
             <Play className="w-16 h-16 sm:w-24 sm:h-24" fill="currentColor" />
           </button>
@@ -114,13 +116,14 @@ export const Player: React.FC<PlayerProps> = ({
       <div className="bg-zinc-900 p-6 sm:p-10 pb-10 sm:pb-16 border-t border-white/5">
         <div className="max-w-5xl mx-auto space-y-8 sm:space-y-12">
           {/* Progress Bar */}
-          <div className="relative">
-            <div className="w-full bg-zinc-800 h-4 sm:h-6 rounded-full overflow-hidden shadow-inner">
+          <div className="relative group/progress cursor-pointer">
+            <div className="w-full bg-zinc-800 h-3 sm:h-5 rounded-full overflow-hidden shadow-inner transition-all group-hover/progress:h-5 sm:group-hover/progress:h-8">
               <div
-                className="bg-fuengirola-gold h-full"
+                className="bg-fuengirola-gold h-full rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(254,203,0,0.4)]"
                 style={{ width: `${progress}%` }}
               />
             </div>
+            {/* Clickable area for seeking - note: seeking logic could be added here if needed */}
           </div>
 
           {/* Buttons */}
@@ -128,28 +131,28 @@ export const Player: React.FC<PlayerProps> = ({
             <button
               onClick={onPrev}
               disabled={!onPrev}
-              className="p-4 sm:p-8 text-white disabled:opacity-20 active:bg-white/10 rounded-full transition-all flex flex-col items-center gap-2 group"
+              className="p-4 sm:p-8 text-white disabled:opacity-20 active:scale-90 hover:bg-white/5 rounded-full transition-all flex flex-col items-center gap-2 group"
             >
-              <SkipBack className="w-10 h-10 sm:w-16 sm:h-16" fill={onPrev ? "currentColor" : "none"} strokeWidth={3} />
-              <span className="text-xs sm:text-sm font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Anterior</span>
+              <SkipBack className="w-10 h-10 sm:w-16 sm:h-16" fill={onPrev ? "currentColor" : "none"} strokeWidth={2.5} />
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] opacity-40 group-hover:opacity-100 transition-opacity">Anterior</span>
             </button>
 
-            <div className="flex gap-4 sm:gap-12 items-center">
+            <div className="flex gap-6 sm:gap-16 items-center">
               <button
                 onClick={handleStop}
-                className="p-4 sm:p-8 text-white bg-zinc-800 rounded-full active:bg-zinc-700 transition-all border-4 border-white/5 hover:border-white/10"
+                className="p-4 sm:p-8 text-white bg-zinc-800/50 hover:bg-zinc-800 rounded-full active:scale-90 transition-all border-2 border-white/5 hover:border-white/10"
               >
-                <Square className="w-8 h-8 sm:w-14 sm:h-14" fill="currentColor" strokeWidth={3} />
+                <Square className="w-8 h-8 sm:w-12 sm:h-12" fill="currentColor" strokeWidth={2.5} />
               </button>
 
               <button
                 onClick={togglePlay}
-                className="p-6 sm:p-12 text-white bg-fuengirola-blue rounded-full shadow-[0_20px_40px_rgba(0,75,147,0.4)] active:scale-90 transition-all border-4 border-white/20 hover:scale-105"
+                className="p-8 sm:p-14 text-white bg-fuengirola-blue rounded-full shadow-[0_20px_50px_rgba(0,75,147,0.5)] active:scale-90 transition-all border-4 border-white/20 hover:scale-105 hover:shadow-[0_25px_60px_rgba(0,75,147,0.6)]"
               >
                 {isPlaying ? (
-                  <Pause className="w-12 h-12 sm:w-20 sm:h-20" fill="currentColor" strokeWidth={3} />
+                  <Pause className="w-14 h-14 sm:w-22 sm:h-22" fill="currentColor" strokeWidth={2.5} />
                 ) : (
-                  <Play className="w-12 h-12 sm:w-20 sm:h-20" fill="currentColor" strokeWidth={3} />
+                  <Play className="w-14 h-14 sm:w-22 sm:h-22" fill="currentColor" strokeWidth={2.5} />
                 )}
               </button>
             </div>
@@ -157,10 +160,10 @@ export const Player: React.FC<PlayerProps> = ({
             <button
               onClick={onNext}
               disabled={!onNext}
-              className="p-4 sm:p-8 text-white disabled:opacity-20 active:bg-white/10 rounded-full transition-all flex flex-col items-center gap-2 group"
+              className="p-4 sm:p-8 text-white disabled:opacity-20 active:scale-90 hover:bg-white/5 rounded-full transition-all flex flex-col items-center gap-2 group"
             >
-              <SkipForward className="w-10 h-10 sm:w-16 sm:h-16" fill={onNext ? "currentColor" : "none"} strokeWidth={3} />
-              <span className="text-xs sm:text-sm font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Siguiente</span>
+              <SkipForward className="w-10 h-10 sm:w-16 sm:h-16" fill={onNext ? "currentColor" : "none"} strokeWidth={2.5} />
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] opacity-40 group-hover:opacity-100 transition-opacity">Siguiente</span>
             </button>
           </div>
         </div>
