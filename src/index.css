@@ -26,7 +26,11 @@ body {
 }
 
 .btn-glass {
-    @apply glass px-8 py-4 rounded-2xl font-black uppercase tracking-widest transition-all duration-300;
+    @apply px-8 py-4 rounded-2xl font-black uppercase tracking-widest transition-all duration-300;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .btn-glass:hover {
