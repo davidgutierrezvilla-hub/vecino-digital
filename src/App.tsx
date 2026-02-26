@@ -57,7 +57,7 @@ export default function App() {
   };
 
   const handleStartLesson = (id: string) => {
-    setState(prev => ({ ...prev, currentView: 'lesson', selectedLessonId: id }));
+    setState(prev => ({ ...prev, currentView: 'player', selectedLessonId: id }));
   };
 
   const handlePlay = () => {
@@ -96,7 +96,7 @@ export default function App() {
     <div className="min-h-screen pt-28 sm:pt-32 pb-16 px-4 sm:px-8 overflow-x-hidden">
       <Header />
 
-      <main className="max-w-5xl mx-auto space-y-8 sm:space-y-12">
+      <main className={`max-w-5xl mx-auto space-y-8 sm:space-y-12 transition-opacity duration-300 ${state.currentView === 'player' ? 'opacity-0 pointer-events-none fixed' : 'opacity-100'}`}>
         <AnimatePresence mode="wait">
           {state.currentView === 'home' && (
             <motion.div
@@ -246,7 +246,7 @@ export default function App() {
         <Player
           lesson={selectedLesson}
           initialPosition={state.progress[selectedLesson.id]?.lastPosition || 0}
-          onClose={() => setState(prev => ({ ...prev, currentView: 'lesson' }))}
+          onClose={() => setState(prev => ({ ...prev, currentView: 'home' }))}
           onComplete={handleVideoComplete}
           onUpdatePosition={(pos) => updateProgress(selectedLesson.id, { lastPosition: pos })}
           onNext={LESSONS.findIndex(l => l.id === selectedLesson.id) < LESSONS.length - 1 ? handleNext : undefined}

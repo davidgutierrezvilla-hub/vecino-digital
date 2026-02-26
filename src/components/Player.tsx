@@ -100,6 +100,7 @@ export const Player: React.FC<PlayerProps> = ({
           playsInline
           autoPlay
           preload="auto"
+          controlsList="nodownload"
         />
 
         {!isPlaying && (
