@@ -72,9 +72,9 @@ export const Player: React.FC<PlayerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/95 z-[100] flex flex-col backdrop-blur-xl">
+    <div className="fixed inset-0 bg-black z-[100] flex flex-col">
       {/* Top Bar */}
-      <div className="absolute top-0 left-0 right-0 p-4 sm:p-8 flex justify-between items-center z-10 bg-gradient-to-b from-black/80 to-transparent">
+      <div className="absolute top-0 left-0 right-0 p-4 sm:p-8 flex justify-between items-center z-10 bg-black/60">
         <h2 className="text-white text-xl sm:text-3xl font-black truncate pr-12 sm:pr-16 uppercase tracking-tight">
           {lesson.title}
         </h2>
@@ -101,29 +101,25 @@ export const Player: React.FC<PlayerProps> = ({
         />
 
         {!isPlaying && (
-          <motion.button
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+          <button
             onClick={togglePlay}
-            className="absolute bg-fuengirola-blue p-10 sm:p-16 rounded-full text-white shadow-[0_0_60px_rgba(0,75,147,0.6)] scale-110 active:scale-95 transition-transform border-8 border-white/20"
+            className="absolute bg-fuengirola-blue p-10 sm:p-16 rounded-full text-white shadow-2xl scale-110 active:scale-95 transition-transform border-4 border-white/20"
           >
             <Play className="w-16 h-16 sm:w-24 sm:h-24" fill="currentColor" />
-          </motion.button>
+          </button>
         )}
       </div>
 
       {/* Controls Bar */}
-      <div className="bg-zinc-900/90 p-6 sm:p-10 pb-10 sm:pb-16 backdrop-blur-md border-t border-white/10">
+      <div className="bg-zinc-900 p-6 sm:p-10 pb-10 sm:pb-16 border-t border-white/5">
         <div className="max-w-5xl mx-auto space-y-8 sm:space-y-12">
           {/* Progress Bar */}
-          <div className="relative group/progress">
-            <div className="w-full bg-zinc-800 h-4 sm:h-6 rounded-full overflow-hidden cursor-pointer shadow-inner">
-              <motion.div
-                className="bg-fuengirola-gold h-full relative"
+          <div className="relative">
+            <div className="w-full bg-zinc-800 h-4 sm:h-6 rounded-full overflow-hidden shadow-inner">
+              <div
+                className="bg-fuengirola-gold h-full"
                 style={{ width: `${progress}%` }}
-              >
-                <div className="absolute right-0 top-0 bottom-0 w-2 bg-white blur-[2px]" />
-              </motion.div>
+              />
             </div>
           </div>
 

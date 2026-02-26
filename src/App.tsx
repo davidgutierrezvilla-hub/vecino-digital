@@ -93,7 +93,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-transparent pt-28 sm:pt-32 pb-16 px-4 sm:px-8">
+    <div className="min-h-screen bg-[#f0f4f8] pt-28 sm:pt-32 pb-16 px-4 sm:px-8">
       <Header />
 
       <main className="max-w-4xl mx-auto space-y-8 sm:space-y-12">
@@ -101,10 +101,9 @@ export default function App() {
           {state.currentView === 'home' && (
             <motion.div
               key="home"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.05 }}
-              transition={{ type: 'spring', damping: 20 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               className="space-y-8 sm:space-y-12"
             >
               <ProgressBar completed={completedCount} total={LESSONS.length} />
@@ -127,24 +126,22 @@ export default function App() {
                 </div>
               </section>
 
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 onClick={() => setShowHelp(true)}
-                className="w-full flex items-center justify-center gap-4 p-8 bg-white/60 backdrop-blur-md border-4 border-dashed border-fuengirola-blue/30 rounded-[40px] text-fuengirola-blue font-black text-2xl hover:border-fuengirola-blue/60 transition-all shadow-xl"
+                className="w-full flex items-center justify-center gap-4 p-8 bg-white border-4 border-dashed border-fuengirola-blue/20 rounded-[40px] text-fuengirola-blue font-black text-2xl hover:bg-fuengirola-blue/5 transition-all shadow-md"
               >
                 <HelpCircle size={40} />
                 ¿Quieres que te ayudemos?
-              </motion.button>
+              </button>
             </motion.div>
           )}
 
           {state.currentView === 'lesson' && selectedLesson && (
             <motion.div
               key="lesson"
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               className="space-y-10"
             >
               <button
@@ -155,17 +152,13 @@ export default function App() {
                 Volver al curso
               </button>
 
-              <div className="bg-white rounded-[60px] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] border-4 border-fuengirola-blue/5">
-                <div className="aspect-video relative group cursor-pointer" onClick={handlePlay}>
-                  <img src={selectedLesson.thumbnail} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-fuengirola-blue/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <motion.div
-                      initial={{ scale: 0.5 }}
-                      animate={{ scale: 1 }}
-                      className="bg-white p-8 rounded-full shadow-2xl"
-                    >
+              <div className="bg-white rounded-[60px] overflow-hidden shadow-xl border-4 border-fuengirola-blue/5">
+                <div className="aspect-video relative cursor-pointer" onClick={handlePlay}>
+                  <img src={selectedLesson.thumbnail} alt="" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-fuengirola-blue/10 flex items-center justify-center">
+                    <div className="bg-white p-8 rounded-full shadow-2xl">
                       <Play size={64} className="text-fuengirola-blue fill-fuengirola-blue" />
-                    </motion.div>
+                    </div>
                   </div>
                 </div>
 
@@ -204,19 +197,14 @@ export default function App() {
           {state.currentView === 'end' && selectedLesson && (
             <motion.div
               key="end"
-              initial={{ opacity: 0, scale: 0.8, y: 50 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              className="text-center space-y-12 py-16 px-8 bg-white/40 backdrop-blur-xl rounded-[80px] border-4 border-fuengirola-blue/10 shadow-3xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center space-y-12 py-16 px-8 bg-white rounded-[80px] border-4 border-fuengirola-blue/10 shadow-2xl"
             >
               <div className="flex justify-center">
-                <motion.div
-                  initial={{ rotate: -20, scale: 0 }}
-                  animate={{ rotate: 0, scale: 1 }}
-                  transition={{ type: 'spring', bounce: 0.6 }}
-                  className="bg-green-100 p-12 rounded-[50px] text-green-600 shadow-inner"
-                >
+                <div className="bg-green-100 p-12 rounded-[50px] text-green-600">
                   <CheckCircle size={140} strokeWidth={3} />
-                </motion.div>
+                </div>
               </div>
 
               <div className="space-y-6">
